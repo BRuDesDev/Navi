@@ -1,0 +1,31 @@
+# 🍿 YouTube Ad & Tracking Domains
+s.youtube.com
+s0.2mdn.net
+ad.doubleclick.net
+pagead.l.doubleclick.net
+googleads.g.doubleclick.net
+pubads.g.doubleclick.net
+tpc.googlesyndication.com
+youtubeadservices.com
+yt3.ggpht.com
+
+# 👀 Analytics & Beacons
+tracking.youtube.com
+www.google-analytics.com
+ssl.google-analytics.com
+clients1.google.com
+clients2.google.com
+clients3.google.com
+clients4.google.com
+clients5.google.com
+clients6.google.com
+
+# 🔇 Extra noise reduction
+youtubei.googleapis.com
+#manifest.googlevideo.com
+#redirector.googlevideo.com
+#r1---sn-.googlevideo.com
+#r2---sn-.googlevideo.com
+#r3---sn-.googlevideo.com
+#r4---sn-.googlevideo.com
+#r5---sn-.googlevideo.com
