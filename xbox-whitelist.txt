@@ -1,0 +1,17 @@
+
+
+client-s.gateway.messenger.live.com
+v10.events.data.microsoft.com
+v20.events.data.microsoft.com
+settings-win.data.microsoft.com
+xboxlive.com
+xsts.auth.xboxlive.com
+user.auth.xboxlive.com
+presence-heartbeat.xboxlive.com
+title.mgt.xboxlive.com
+notify.xboxlive.com
+displaycatalog.mp.microsoft.com
+cert.mgt.xboxlive.com
+
+
+
