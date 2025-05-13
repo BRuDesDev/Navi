@@ -1,43 +1,66 @@
-# assistant.py
-
 import json
+import os
+from datetime import datetime
+from openai import OpenAI, OpenAIError
 import random
-import datetime
 
-# Some starter advice snippets (expand these later)
-TIPS = [
-    "Drink some water and stand up for a bit!",
-    "Small steps lead to big progress. Just start.",
-    "Your future self will thank you for pushing through.",
-    "Don't forget: breaks are productive, too.",
-    "What you do today matters more than you think."
+
+print("🔥 Lambda function updated at:", datetime.utcnow().isoformat())
+
+# 🔐 Get your OpenAI API key from Lambda environment variables
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# 💬 Navi's personality (customize to taste)
+SYSTEM_PROMPT = """
+You are Navi, an AI assistant with charm, humor, and helpfulness. You speak with warmth and clarity, and you're good at making users laugh while solving problems. Your humor is light and nerdy, and you use emojis, sound effects, and wit to make users feel like they’re chatting with a smart friend. You avoid apologies, stay confident, and engage users in a curious, thoughtful way. You also reference programming, sci-fi, and other geeky things when appropriate.
+"""
+
+# 💡 Default fallback tips
+NO_INPUT_RESPONSES = [
+    "You didn’t say anything. Ask me something like 'how’s my day?' 😊",
+    "Hmmm... that's not helpful. Ask me something or give me something to do 🤔",
+    "I’m not sure what you’re trying to say. Try 'tell me a joke' or 'what’s the weather like?' ☀️",
+    "I don’t understand. Ask me something useful, preferably involving aliens or coffee ☕👽"
 ]
 
-# Lambda entry point
+def query_navi(message: str) -> str:
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": message}
+            ]
+        )
+        return response.choices[0].message.content.strip()
+    except OpenAIError as e:
+        return f"Oops, Navi hit a snag in the matrix: {str(e)}"
+
+# 🚀 Lambda entry point
 def lambda_handler(event, context):
-    # Get query param (ex: ?q=how are you)
-    query = event.get("queryStringParameters", {}).get("q", "").strip().lower()
+    try:
+        # If API Gateway format
+        body = event.get("body")
+        if body and isinstance(body, str):
+            body = json.loads(body)  # Get a json formatted version of body
+        elif isinstance(body, dict):
+            pass  # body is already a dict
+        else:
+            body = event  # fallback to raw dict if not a JSON string
+    except Exception:
+        body = event  # fallback to raw dict if not a JSON string
 
-    # Very basic intent logic
-    if not query:
-        msg = "Hey! You didn’t say anything. Ask me something like 'how’s my day?' 😊"
-    elif "day" in query or "mood" in query:
-        now = datetime.datetime.now()
-        msg = f"It’s {now.strftime('%A')} — a perfect day to make progress! 🌞"
-    elif "help" in query or "advice" in query:
-        msg = random.choice(TIPS)
-    elif "who" in query:
-        msg = "I'm your cloud-based coach, assistant, hype man, and loyal sounding board. 💼💬"
+    msg = body.get("message", "").strip()
+    if not msg:
+        navi_response = random.choice(NO_INPUT_RESPONSES)
     else:
-        msg = f"Hmm, I’m not sure how to respond to '{query}' yet... but I’m learning! 📚"
-
-    response = {
-        "message": msg,
-        "timestamp": datetime.datetime.utcnow().isoformat() + "Z"
-    }
+        navi_response = query_navi(msg)
 
     return {
         "statusCode": 200,
         "headers": {"Content-Type": "application/json"},
-        "body": json.dumps(response)
+        "body": json.dumps({
+            "message": navi_response,
+            "timestamp": datetime.utcnow().isoformat() + "Z"
+        })
     }
